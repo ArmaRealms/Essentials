@@ -1073,7 +1073,7 @@ public class Essentials extends JavaPlugin implements net.ess3.api.IEssentials {
             if (getSettings().isDebug()) {
                 LOGGER.log(Level.INFO, "Constructing new userfile from base player " + base.getName());
             }
-            user = new User(base, this);
+            user = userMap.loadUncachedUser(base);
         } else {
             user.update(base);
         }
