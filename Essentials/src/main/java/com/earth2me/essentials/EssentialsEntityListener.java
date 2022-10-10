@@ -165,7 +165,7 @@ public class EssentialsEntityListener implements Listener {
             return;
         }
         final User user = ess.getUser(event.getEntity());
-        if (ess.getSettings().infoAfterDeath()) {
+        if (ess.getSettings().infoAfterDeath() && user.isAuthorized("essentials.infoafterdeath")) {
             final Location loc = user.getLocation();
             user.sendMessage(tl("infoAfterDeath", loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()));
         }
