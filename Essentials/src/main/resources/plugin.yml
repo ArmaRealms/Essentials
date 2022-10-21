@@ -334,7 +334,7 @@ commands:
     description: Removes entities in your world.
     usage: /<command> <all|tamed|named|drops|arrows|boats|minecarts|xp|paintings|itemframes|endercrystals|monsters|animals|ambient|mobs|[mobType]> [radius|world]
     aliases: [killmob]
-   renamehome:
+  renamehome:
     description: Renomear uma home.
     usage: /<command> <nome> <novo nome>
   repair:
