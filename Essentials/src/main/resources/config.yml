@@ -785,6 +785,9 @@ spawn-if-no-home: true
 # Should players be asked to provide confirmation for homes which they attempt to overwrite?
 confirm-home-overwrite: false
 
+# Should players be asked to provide confirmation for homes which they attempt to delete?
+confirm-home-delete: false
+
 ############################################################
 # +------------------------------------------------------+ #
 # |                       Economy                        | #

@@ -1930,6 +1930,11 @@ public class Settings implements net.ess3.api.ISettings {
     }
 
     @Override
+    public boolean isConfirmHomeDelete() {
+        return config.getBoolean("confirm-home-delete", false);
+    }
+
+    @Override
     public boolean infoAfterDeath() {
         return config.getBoolean("send-info-after-death", false);
     }

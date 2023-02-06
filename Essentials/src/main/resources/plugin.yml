@@ -88,7 +88,8 @@ commands:
     usage: /<alias> - Define in bukkit.yml
   delhome:
     description: Removes a home.
-    usage: /<command> [player:]<name>
+    usage: /<command> <nome>
+    aliases: [homedel]
   deljail:
     description: Removes a jail.
     usage: /<command> <jailname>
@@ -176,7 +177,7 @@ commands:
     usage: /<command> <message>
   home:
     description: Teleport to your home.
-    usage: /<command> [player:][name]
+    usage: /<command> [nome]
     aliases: [homes]
   ice:
     description: Cools a player off.
@@ -337,6 +338,7 @@ commands:
   renamehome:
     description: Renomear uma home.
     usage: /<command> <nome> <novo nome>
+    aliases: [homerename]
   repair:
     description: Repairs the durability of one or all items.
     usage: /<command> [hand|all]
@@ -356,7 +358,8 @@ commands:
     usage: /<command> <<itemname>|<id>|hand|inventory|blocks> [amount]
   sethome:
     description: Set your home to your current location.
-    usage: /<command> [[player:]name]
+    usage: /<command> [nome]
+    aliases: [homeset]
   setjail:
     description: Creates a jail where you specified named [jailname].
     usage: /<command> <jailname>
