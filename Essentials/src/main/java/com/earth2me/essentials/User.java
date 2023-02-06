@@ -89,6 +89,10 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
     private long lastNotifiedAboutMailsMs;
     private String lastHomeConfirmation;
     private long lastHomeConfirmationTimestamp;
+    private String lastDelhomeConfirmation;
+    private long lastDelhomeConfirmationTimestamp;
+    private String lastRenamehomeConfirmation;
+    private long lastRenamehomeConfirmationTimestamp;
     private Boolean toggleShout;
     private boolean freeze = false;
     private transient final List<String> signCopy = Lists.newArrayList("", "", "", "");
@@ -1186,6 +1190,38 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
 
     public void setLastHomeConfirmationTimestamp() {
         this.lastHomeConfirmationTimestamp = System.currentTimeMillis();
+    }
+
+    public String getLastDelhomeConfirmation() {
+        return lastDelhomeConfirmation;
+    }
+
+    public void setLastDelhomeConfirmation(final String lastDelhomeConfirmation) {
+        this.lastDelhomeConfirmation = lastDelhomeConfirmation;
+    }
+
+    public long getLastDelhomeConfirmationTimestamp() {
+        return lastDelhomeConfirmationTimestamp;
+    }
+
+    public void setLastDelhomeConfirmationTimestamp() {
+        this.lastDelhomeConfirmationTimestamp = System.currentTimeMillis();
+    }
+
+    public String getLastRenamehomeConfirmation() {
+        return lastRenamehomeConfirmation;
+    }
+
+    public void setLastRenamehomeConfirmation(final String lastRenamehomeConfirmation) {
+        this.lastRenamehomeConfirmation = lastRenamehomeConfirmation;
+    }
+
+    public long getLastRenamehomeConfirmationTimestamp() {
+        return lastRenamehomeConfirmationTimestamp;
+    }
+
+    public void setLastRenamehomeConfirmationTimestamp() {
+        this.lastRenamehomeConfirmationTimestamp = System.currentTimeMillis();
     }
 
     public List<String> getSignCopy() {
