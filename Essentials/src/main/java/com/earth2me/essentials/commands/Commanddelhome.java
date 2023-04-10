@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static com.earth2me.essentials.I18n.tl;
 
@@ -23,11 +24,11 @@ public class Commanddelhome extends EssentialsCommand {
             throw new NotEnoughArgumentsException();
         }
 
-        User user = ess.getUser(sender.getPlayer());
+        User usersHome = ess.getUser(sender.getPlayer());
         final String name;
         final String[] expandedArg;
 
-        //Allowing both formats /sethome khobbits house | /sethome khobbits:house
+        //Allowing both formats /delhome khobbits house | /delhome khobbits:house
         final String[] nameParts = args[0].split(":");
         if (nameParts[0].length() != args[0].length()) {
             expandedArg = nameParts;
@@ -35,10 +36,10 @@ public class Commanddelhome extends EssentialsCommand {
             expandedArg = args;
         }
 
-        if (expandedArg.length > 1 && (user == null || user.isAuthorized("essentials.delhome.others"))) {
-            user = getPlayer(server, expandedArg, 0, true, true);
+        if (expandedArg.length > 1 && (usersHome == null || usersHome.isAuthorized("essentials.delhome.others"))) {
+            usersHome = getPlayer(server, expandedArg, 0, true, true);
             name = expandedArg[1];
-        } else if (user == null) {
+        } else if (usersHome == null) {
             throw new NotEnoughArgumentsException();
         } else {
             name = expandedArg[0];
@@ -47,9 +48,16 @@ public class Commanddelhome extends EssentialsCommand {
         if (name.equalsIgnoreCase("bed")) {
             throw new Exception(tl("invalidHomeName"));
         }
+        if (ess.getSettings().isConfirmHomeDelete() && usersHome.hasHome(name) && (!name.equals(usersHome.getLastDelhomeConfirmation()) || name.equals(usersHome.getLastDelhomeConfirmation()) && System.currentTimeMillis() - usersHome.getLastDelhomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
+            usersHome.setLastDelhomeConfirmation(name);
+            usersHome.setLastDelhomeConfirmationTimestamp();
+            usersHome.sendMessage(tl("delhomeConfirmation", name));
+            return;
+        }
 
-        user.delHome(name.toLowerCase(Locale.ENGLISH));
+        usersHome.delHome(name.toLowerCase(Locale.ENGLISH));
         sender.sendMessage(tl("deleteHome", name));
+        usersHome.setLastDelhomeConfirmation(null);
     }
 
     @Override

@@ -732,6 +732,10 @@ log-command-block-commands: true
 # Set the maximum speed for projectiles spawned with /fireball.
 max-projectile-speed: 8
 
+# Should essentials notify other plugins when editing signs through the /editsign command.
+# Setting this to true also allows users to create essentials signs by using /editsign.
+sign-edit-side-effects: true
+
 # Should EssentialsX check for updates?
 # If set to true, EssentialsX will show notifications when a new version is available.
 # This uses the public GitHub API and no identifying information is sent or stored.
@@ -780,6 +784,9 @@ spawn-if-no-home: true
 
 # Should players be asked to provide confirmation for homes which they attempt to overwrite?
 confirm-home-overwrite: false
+
+# Should players be asked to provide confirmation for homes which they attempt to delete?
+confirm-home-delete: false
 
 ############################################################
 # +------------------------------------------------------+ #

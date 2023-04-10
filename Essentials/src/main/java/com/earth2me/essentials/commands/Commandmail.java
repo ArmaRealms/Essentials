@@ -32,7 +32,7 @@ public class Commandmail extends EssentialsCommand {
 
     @Override
     public void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {
-        if (args.length >= 1 && "read".equalsIgnoreCase(args[0])) {
+        if (args.length >= 1 && "ler".equalsIgnoreCase(args[0])) {
             final ArrayList<MailMessage> mail = user.getMailMessages();
             if (mail == null || mail.size() == 0) {
                 user.sendMessage(tl("noMail"));
@@ -64,7 +64,7 @@ public class Commandmail extends EssentialsCommand {
             user.setMailList(mail);
             return;
         }
-        if (args.length >= 3 && "send".equalsIgnoreCase(args[0])) {
+        if (args.length >= 3 && "enviar".equalsIgnoreCase(args[0])) {
             if (!user.isAuthorized("essentials.mail.send")) {
                 throw new Exception(tl("noPerm", "essentials.mail.send"));
             }
@@ -168,7 +168,7 @@ public class Commandmail extends EssentialsCommand {
             user.sendMessage(tl("mailSent"));
             return;
         }
-        if (args.length >= 1 && "clear".equalsIgnoreCase(args[0])) {
+        if (args.length >= 1 && "limpar".equalsIgnoreCase(args[0])) {
             final ArrayList<MailMessage> mails = user.getMailMessages();
             if (mails == null || mails.size() == 0) {
                 user.sendMessage(tl("noMail"));
@@ -199,11 +199,11 @@ public class Commandmail extends EssentialsCommand {
 
     @Override
     protected void run(final Server server, final CommandSource sender, final String commandLabel, final String[] args) throws Exception {
-        if (args.length >= 1 && "read".equalsIgnoreCase(args[0])) {
+        if (args.length >= 1 && "ler".equalsIgnoreCase(args[0])) {
             throw new Exception(tl("onlyPlayers", commandLabel + " read"));
-        } else if (args.length >= 1 && "clear".equalsIgnoreCase(args[0])) {
+        } else if (args.length >= 1 && "limpar".equalsIgnoreCase(args[0])) {
             throw new Exception(tl("onlyPlayers", commandLabel + " clear"));
-        } else if (args.length >= 3 && "send".equalsIgnoreCase(args[0])) {
+        } else if (args.length >= 3 && "enviar".equalsIgnoreCase(args[0])) {
             final User u;
             try {
                 u = getPlayer(server, args[1], true, true);
@@ -234,7 +234,7 @@ public class Commandmail extends EssentialsCommand {
             sender.sendMessage(tl("mailSent"));
             return;
         } else if (args.length >= 2) {
-            //allow sending from console without "send" argument, since it's the only thing the console can do
+            //allow sending from console without "enviar" argument, since it's the only thing the console can do
             final User u;
             try {
                 u = getPlayer(server, args[0], true, true);
@@ -273,9 +273,9 @@ public class Commandmail extends EssentialsCommand {
     @Override
     protected List<String> getTabCompleteOptions(final Server server, final User user, final String commandLabel, final String[] args) {
         if (args.length == 1) {
-            final List<String> options = Lists.newArrayList("read", "clear");
+            final List<String> options = Lists.newArrayList("ler", "limpar");
             if (user.isAuthorized("essentials.mail.send")) {
-                options.add("send");
+                options.add("enviar");
             }
             if (user.isAuthorized("essentials.mail.sendtemp")) {
                 options.add("sendtemp");
@@ -288,11 +288,11 @@ public class Commandmail extends EssentialsCommand {
             }
             return options;
         } else if (args.length == 2) {
-            if ((args[0].equalsIgnoreCase("send") && user.isAuthorized("essentials.mail.send")) || (args[0].equalsIgnoreCase("sendtemp") && user.isAuthorized("essentials.mail.sendtemp"))) {
+            if ((args[0].equalsIgnoreCase("enviar") && user.isAuthorized("essentials.mail.send")) || (args[0].equalsIgnoreCase("sendtemp") && user.isAuthorized("essentials.mail.sendtemp"))) {
                 return getPlayers(server, user);
             } else if (args[0].equalsIgnoreCase("sendtempall") && user.isAuthorized("essentials.mail.sendtempall")) {
                 return COMMON_DATE_DIFFS;
-            } else if (args[0].equalsIgnoreCase("read")) {
+            } else if (args[0].equalsIgnoreCase("ler")) {
                 final ArrayList<MailMessage> mail = user.getMailMessages();
                 final int pages = mail != null ? (mail.size() / 9 + (mail.size() % 9 > 0 ? 1 : 0)) : 0;
                 if (pages == 0) {
@@ -326,9 +326,9 @@ public class Commandmail extends EssentialsCommand {
     @Override
     protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender, final String commandLabel, final String[] args) {
         if (args.length == 1) {
-            return Lists.newArrayList("send", "sendall", "sendtemp", "sendtempall");
+            return Lists.newArrayList("enviar", "sendall", "sendtemp", "sendtempall");
         } else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("send") || args[0].equalsIgnoreCase("sendtemp")) {
+            if (args[0].equalsIgnoreCase("enviar") || args[0].equalsIgnoreCase("sendtemp")) {
                 return getPlayers(server, sender);
             } else if (args[0].equalsIgnoreCase("sendtempall")) {
                 return COMMON_DATE_DIFFS;
