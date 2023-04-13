@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static com.earth2me.essentials.I18n.tl;
 
@@ -59,10 +60,15 @@ public class Commandrenamehome extends EssentialsCommand {
         if ("bed".equals(newName) || NumberUtil.isInt(newName) || "bed".equals(oldName) || NumberUtil.isInt(oldName)) {
             throw new NoSuchFieldException(tl("invalidHomeName"));
         }
-
+        if (ess.getSettings().isConfirmHomeOverwrite() && usersHome.hasHome(newName) && (!newName.equals(usersHome.getLastRenamehomeConfirmation()) || newName.equals(usersHome.getLastRenamehomeConfirmation()) && System.currentTimeMillis() - usersHome.getLastRenamehomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
+            usersHome.setLastRenamehomeConfirmation(newName);
+            usersHome.setLastRenamehomeConfirmationTimestamp();
+            usersHome.sendMessage(tl("renamehomeConfirmation", newName));
+            return;
+        }
         usersHome.renameHome(oldName, newName);
         user.sendMessage(tl("homeRenamed", oldName, newName));
-        usersHome.setLastHomeConfirmation(null);
+        usersHome.setLastRenamehomeConfirmation(null);
 
     }
 
