@@ -68,7 +68,6 @@ import net.ess3.provider.ProviderListener;
 import net.ess3.provider.SerializationProvider;
 import net.ess3.provider.ServerStateProvider;
 import net.ess3.provider.SignDataProvider;
-import net.ess3.provider.SignUpdateProvider;
 import net.ess3.provider.SpawnEggProvider;
 import net.ess3.provider.SpawnerBlockProvider;
 import net.ess3.provider.SpawnerItemProvider;
@@ -76,7 +75,6 @@ import net.ess3.provider.SyncCommandsProvider;
 import net.ess3.provider.WorldInfoProvider;
 import net.ess3.provider.providers.BaseLoggerProvider;
 import net.ess3.provider.providers.BasePotionDataProvider;
-import net.ess3.provider.providers.BaseSignUpdateProvider;
 import net.ess3.provider.providers.BlockMetaSpawnerItemProvider;
 import net.ess3.provider.providers.BukkitMaterialTagProvider;
 import net.ess3.provider.providers.BukkitSpawnerBlockProvider;
@@ -95,7 +93,6 @@ import net.ess3.provider.providers.PaperMaterialTagProvider;
 import net.ess3.provider.providers.PaperRecipeBookListener;
 import net.ess3.provider.providers.PaperSerializationProvider;
 import net.ess3.provider.providers.PaperServerStateProvider;
-import net.ess3.provider.providers.PaperSignUpdateProvider;
 import net.essentialsx.api.v2.services.BalanceTop;
 import net.essentialsx.api.v2.services.mail.MailService;
 import org.bukkit.Server;
@@ -185,7 +182,6 @@ public class Essentials extends JavaPlugin implements net.ess3.api.IEssentials {
     private transient ItemUnbreakableProvider unbreakableProvider;
     private transient WorldInfoProvider worldInfoProvider;
     private transient SignDataProvider signDataProvider;
-    private transient SignUpdateProvider signUpdateProvider;
     private transient Kits kits;
     private transient RandomTeleport randomTeleport;
     private transient UpdateChecker updateChecker;
@@ -455,12 +451,6 @@ public class Essentials extends JavaPlugin implements net.ess3.api.IEssentials {
 
             if (VersionUtil.getServerBukkitVersion().isHigherThanOrEqualTo(VersionUtil.v1_14_4_R01)) {
                 signDataProvider = new ModernSignDataProvider(this);
-            }
-
-            if (PaperLib.isPaper()) {
-                signUpdateProvider = new PaperSignUpdateProvider();
-            } else {
-                signUpdateProvider = new BaseSignUpdateProvider();
             }
 
             execTimer.mark("Init(Providers)");
@@ -1355,11 +1345,6 @@ public class Essentials extends JavaPlugin implements net.ess3.api.IEssentials {
     @Override
     public SignDataProvider getSignDataProvider() {
         return signDataProvider;
-    }
-
-    @Override
-    public SignUpdateProvider getSignUpdateProvider() {
-        return signUpdateProvider;
     }
 
     @Override

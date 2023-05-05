@@ -1,11 +1,9 @@
 package com.earth2me.essentials.commands;
 
-import com.earth2me.essentials.IEssentials;
 import com.earth2me.essentials.User;
 import com.earth2me.essentials.utils.FormatUtil;
 import com.earth2me.essentials.utils.NumberUtil;
 import com.google.common.collect.Lists;
-import net.ess3.provider.SignUpdateProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.block.Block;
@@ -40,19 +38,19 @@ public class Commandeditsign extends EssentialsCommand {
                     throw new Exception(tl("editsignCommandLimit"));
                 }
                 sign.setLine(line, text);
-                updateSign(sign, user);
+                sign.update();
                 user.sendMessage(tl("editsignCommandSetSuccess", line + 1, text));
             } else if (args[0].equalsIgnoreCase("clear")) {
                 if (args.length == 1) {
                     for (int i = 0; i < 4; i++) { // A whole one line of line savings!
                         sign.setLine(i, "");
                     }
-                    updateSign(sign, user);
+                    sign.update();
                     user.sendMessage(tl("editsignCommandClear"));
                 } else {
                     final int line = Integer.parseInt(args[1]) - 1;
                     sign.setLine(line, "");
-                    updateSign(sign, user);
+                    sign.update();
                     user.sendMessage(tl("editsignCommandClearLine", line + 1));
                 }
             } else if (args[0].equalsIgnoreCase("copy") || args[0].equalsIgnoreCase("paste")) {
@@ -69,6 +67,10 @@ public class Commandeditsign extends EssentialsCommand {
                     processSignCopyPaste(user, sign, line, copy);
                     user.sendMessage(tl(tlPrefix + "Line", line + 1, commandLabel));
                 }
+
+                if (!copy) {
+                    sign.update();
+                }
             } else {
                 throw new NotEnoughArgumentsException();
             }
@@ -77,7 +79,7 @@ public class Commandeditsign extends EssentialsCommand {
         }
     }
 
-    private void processSignCopyPaste(final User user, final Sign sign, final int index, final boolean copy) throws Exception {
+    private void processSignCopyPaste(final User user, final Sign sign, final int index, final boolean copy) {
         if (copy) {
             // We use unformat here to prevent players from copying signs with colors that they do not have permission to use.
             user.getSignCopy().set(index, FormatUtil.unformatString(user, "essentials.editsign", sign.getLine(index)));
@@ -86,21 +88,6 @@ public class Commandeditsign extends EssentialsCommand {
 
         final String line = FormatUtil.formatString(user, "essentials.editsign", user.getSignCopy().get(index));
         sign.setLine(index, line == null ? "" : line);
-        updateSign(sign, user);
-    }
-
-    private void updateSign(final Sign sign, final User user) throws Exception {
-        final IEssentials essentials = user.getEssentials();
-        final SignUpdateProvider provider = essentials.getSignUpdateProvider();
-
-        if (!essentials.getSettings().isSignEditSideEffects()) {
-            sign.update();
-            return;
-        }
-
-        if (!provider.updateSign(sign, user.getBase(), sign.getLines())) {
-            throw new Exception(tl("editsignCommandEventCancelled"));
-        }
     }
 
     @Override

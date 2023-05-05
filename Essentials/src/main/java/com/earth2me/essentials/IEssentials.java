@@ -18,7 +18,6 @@ import net.ess3.provider.PersistentDataProvider;
 import net.ess3.provider.SerializationProvider;
 import net.ess3.provider.ServerStateProvider;
 import net.ess3.provider.SignDataProvider;
-import net.ess3.provider.SignUpdateProvider;
 import net.ess3.provider.SpawnerBlockProvider;
 import net.ess3.provider.SpawnerItemProvider;
 import net.ess3.provider.SyncCommandsProvider;
@@ -170,8 +169,6 @@ public interface IEssentials extends Plugin {
     WorldInfoProvider getWorldInfoProvider();
 
     SignDataProvider getSignDataProvider();
-
-    SignUpdateProvider getSignUpdateProvider();
 
     PluginCommand getPluginCommand(String cmd);
 }
