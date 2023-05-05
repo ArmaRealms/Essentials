@@ -27,7 +27,7 @@ public class Commanddelhome extends EssentialsCommand {
             throw new NotEnoughArgumentsException();
         }
 
-        User usersHome = ess.getUser(sender.getPlayer());
+        User user = ess.getUser(sender.getPlayer());
         final String name;
         final String[] expandedArg;
 
@@ -51,13 +51,13 @@ public class Commanddelhome extends EssentialsCommand {
         if (name.equals("bed")) {
             throw new Exception(tl("invalidHomeName"));
         }
-        if (ess.getSettings().isConfirmHomeDelete() && usersHome.hasHome(name)
-                && (!name.equals(usersHome.getLastDelhomeConfirmation())
-                        || name.equals(usersHome.getLastDelhomeConfirmation()) && System.currentTimeMillis()
-                                - usersHome.getLastDelhomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
-            usersHome.setLastDelhomeConfirmation(name);
-            usersHome.setLastDelhomeConfirmationTimestamp();
-            usersHome.sendMessage(tl("delhomeConfirmation", name));
+        if (ess.getSettings().isConfirmHomeDelete() && user.hasHome(name)
+                && (!name.equals(user.getLastDelhomeConfirmation())
+                        || name.equals(user.getLastDelhomeConfirmation()) && System.currentTimeMillis()
+                                - user.getLastDelhomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
+            user.setLastDelhomeConfirmation(name);
+            user.setLastDelhomeConfirmationTimestamp();
+            user.sendMessage(tl("delhomeConfirmation", name));
             return;
         }
 
@@ -72,12 +72,11 @@ public class Commanddelhome extends EssentialsCommand {
 
         user.delHome(name);
         sender.sendMessage(tl("deleteHome", name));
-        usersHome.setLastDelhomeConfirmation(null);
+        user.setLastDelhomeConfirmation(null);
     }
 
     @Override
-    protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender,
-            final String commandLabel, final String[] args) {
+    protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender, final String commandLabel, final String[] args) {
         final IUser user = sender.getUser(ess);
         final boolean canDelOthers = sender.isAuthorized("essentials.delhome.others", ess);
         if (args.length == 1) {
@@ -90,7 +89,7 @@ public class Commanddelhome extends EssentialsCommand {
                     final String namePart = args[0].substring(0, sepIndex);
                     final User otherUser;
                     try {
-                        otherUser = getPlayer(server, new String[] { namePart }, 0, true, true);
+                        otherUser = getPlayer(server, new String[] {namePart}, 0, true, true);
                     } catch (final Exception ex) {
                         return homes;
                     }

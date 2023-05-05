@@ -64,6 +64,13 @@ public class Commandrenamehome extends EssentialsCommand {
             throw new NoSuchFieldException(tl("invalidHomeName"));
         }
 
+        if (ess.getSettings().isConfirmHomeOverwrite() && usersHome.hasHome(newName) && (!newName.equals(usersHome.getLastRenamehomeConfirmation()) || newName.equals(usersHome.getLastRenamehomeConfirmation()) && System.currentTimeMillis() - usersHome.getLastRenamehomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
+            usersHome.setLastRenamehomeConfirmation(newName);
+            usersHome.setLastRenamehomeConfirmationTimestamp();
+            usersHome.sendMessage(tl("renamehomeConfirmation", newName));
+            return;
+        }
+
         final HomeModifyEvent event = new HomeModifyEvent(user, usersHome, oldName, newName,
                 usersHome.getHome(oldName));
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -81,8 +88,7 @@ public class Commandrenamehome extends EssentialsCommand {
     }
 
     @Override
-    protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender,
-            final String commandLabel, final String[] args) {
+    protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender, final String commandLabel, final String[] args) {
         final IUser user = sender.getUser(ess);
         if (args.length != 1) {
             return Collections.emptyList();
@@ -99,7 +105,7 @@ public class Commandrenamehome extends EssentialsCommand {
                 final String namePart = args[0].substring(0, sepIndex);
                 final User otherUser;
                 try {
-                    otherUser = getPlayer(server, new String[] { namePart }, 0, true, true);
+                    otherUser = getPlayer(server, new String[]{namePart}, 0, true, true);
                 } catch (final Exception ex) {
                     return homes;
                 }
