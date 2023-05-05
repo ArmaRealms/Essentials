@@ -43,6 +43,4 @@ jobs:
         name: EssentialsX
         path: |
           jars/EssentialsX-*.jar
-          jars/EssentialsXDiscord-*.jar
-          jars/EssentialsXDiscordLink-*.jar
           jars/EssentialsXSpawn-*.jar
