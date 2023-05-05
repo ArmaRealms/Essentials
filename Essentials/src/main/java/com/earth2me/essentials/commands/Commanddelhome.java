@@ -3,6 +3,8 @@ package com.earth2me.essentials.commands;
 import com.earth2me.essentials.CommandSource;
 import com.earth2me.essentials.IUser;
 import com.earth2me.essentials.User;
+import net.essentialsx.api.v2.events.HomeModifyEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 
 import java.util.ArrayList;
@@ -19,7 +21,8 @@ public class Commanddelhome extends EssentialsCommand {
     }
 
     @Override
-    public void run(final Server server, final CommandSource sender, final String commandLabel, final String[] args) throws Exception {
+    public void run(final Server server, final CommandSource sender, final String commandLabel, final String[] args)
+            throws Exception {
         if (args.length < 1) {
             throw new NotEnoughArgumentsException();
         }
@@ -28,7 +31,7 @@ public class Commanddelhome extends EssentialsCommand {
         final String name;
         final String[] expandedArg;
 
-        //Allowing both formats /delhome khobbits house | /delhome khobbits:house
+        // Allowing both formats /delhome khobbits house | /delhome khobbits:house
         final String[] nameParts = args[0].split(":");
         if (nameParts[0].length() != args[0].length()) {
             expandedArg = nameParts;
@@ -36,32 +39,45 @@ public class Commanddelhome extends EssentialsCommand {
             expandedArg = args;
         }
 
-        if (expandedArg.length > 1 && (usersHome == null || usersHome.isAuthorized("essentials.delhome.others"))) {
-            usersHome = getPlayer(server, expandedArg, 0, true, true);
-            name = expandedArg[1];
-        } else if (usersHome == null) {
+        if (expandedArg.length > 1 && (user == null || user.isAuthorized("essentials.delhome.others"))) {
+            user = getPlayer(server, expandedArg, 0, true, true);
+            name = expandedArg[1].toLowerCase(Locale.ENGLISH);
+        } else if (user == null) {
             throw new NotEnoughArgumentsException();
         } else {
-            name = expandedArg[0];
+            name = expandedArg[0].toLowerCase(Locale.ENGLISH);
         }
 
-        if (name.equalsIgnoreCase("bed")) {
+        if (name.equals("bed")) {
             throw new Exception(tl("invalidHomeName"));
         }
-        if (ess.getSettings().isConfirmHomeDelete() && usersHome.hasHome(name) && (!name.equals(usersHome.getLastDelhomeConfirmation()) || name.equals(usersHome.getLastDelhomeConfirmation()) && System.currentTimeMillis() - usersHome.getLastDelhomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
+        if (ess.getSettings().isConfirmHomeDelete() && usersHome.hasHome(name)
+                && (!name.equals(usersHome.getLastDelhomeConfirmation())
+                        || name.equals(usersHome.getLastDelhomeConfirmation()) && System.currentTimeMillis()
+                                - usersHome.getLastDelhomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
             usersHome.setLastDelhomeConfirmation(name);
             usersHome.setLastDelhomeConfirmationTimestamp();
             usersHome.sendMessage(tl("delhomeConfirmation", name));
             return;
         }
 
-        usersHome.delHome(name.toLowerCase(Locale.ENGLISH));
+        final HomeModifyEvent event = new HomeModifyEvent(sender.getUser(ess), user, name, user.getHome(name), false);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            if (ess.getSettings().isDebug()) {
+                ess.getLogger().info("HomeModifyEvent canceled for /delhome execution by " + sender.getDisplayName());
+            }
+            return;
+        }
+
+        user.delHome(name);
         sender.sendMessage(tl("deleteHome", name));
         usersHome.setLastDelhomeConfirmation(null);
     }
 
     @Override
-    protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender, final String commandLabel, final String[] args) {
+    protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender,
+            final String commandLabel, final String[] args) {
         final IUser user = sender.getUser(ess);
         final boolean canDelOthers = sender.isAuthorized("essentials.delhome.others", ess);
         if (args.length == 1) {
@@ -74,7 +90,7 @@ public class Commanddelhome extends EssentialsCommand {
                     final String namePart = args[0].substring(0, sepIndex);
                     final User otherUser;
                     try {
-                        otherUser = getPlayer(server, new String[] {namePart}, 0, true, true);
+                        otherUser = getPlayer(server, new String[] { namePart }, 0, true, true);
                     } catch (final Exception ex) {
                         return homes;
                     }

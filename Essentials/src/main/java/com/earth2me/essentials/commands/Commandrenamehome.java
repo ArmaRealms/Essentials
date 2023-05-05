@@ -4,6 +4,8 @@ import com.earth2me.essentials.CommandSource;
 import com.earth2me.essentials.User;
 import com.earth2me.essentials.utils.NumberUtil;
 import net.ess3.api.IUser;
+import net.essentialsx.api.v2.events.HomeModifyEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 
 import java.util.ArrayList;
@@ -20,7 +22,8 @@ public class Commandrenamehome extends EssentialsCommand {
     }
 
     @Override
-    public void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {
+    public void run(final Server server, final User user, final String commandLabel, final String[] args)
+            throws Exception {
         User usersHome = user;
         final String oldName;
         final String newName;
@@ -60,12 +63,17 @@ public class Commandrenamehome extends EssentialsCommand {
         if ("bed".equals(newName) || NumberUtil.isInt(newName) || "bed".equals(oldName) || NumberUtil.isInt(oldName)) {
             throw new NoSuchFieldException(tl("invalidHomeName"));
         }
-        if (ess.getSettings().isConfirmHomeOverwrite() && usersHome.hasHome(newName) && (!newName.equals(usersHome.getLastRenamehomeConfirmation()) || newName.equals(usersHome.getLastRenamehomeConfirmation()) && System.currentTimeMillis() - usersHome.getLastRenamehomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
-            usersHome.setLastRenamehomeConfirmation(newName);
-            usersHome.setLastRenamehomeConfirmationTimestamp();
-            usersHome.sendMessage(tl("renamehomeConfirmation", newName));
+
+        final HomeModifyEvent event = new HomeModifyEvent(user, usersHome, oldName, newName,
+                usersHome.getHome(oldName));
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            if (ess.getSettings().isDebug()) {
+                ess.getLogger().info("HomeModifyEvent canceled for /renamehome execution by " + user.getDisplayName());
+            }
             return;
         }
+
         usersHome.renameHome(oldName, newName);
         user.sendMessage(tl("homeRenamed", oldName, newName));
         usersHome.setLastRenamehomeConfirmation(null);
@@ -73,7 +81,8 @@ public class Commandrenamehome extends EssentialsCommand {
     }
 
     @Override
-    protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender, final String commandLabel, final String[] args) {
+    protected List<String> getTabCompleteOptions(final Server server, final CommandSource sender,
+            final String commandLabel, final String[] args) {
         final IUser user = sender.getUser(ess);
         if (args.length != 1) {
             return Collections.emptyList();
@@ -90,7 +99,7 @@ public class Commandrenamehome extends EssentialsCommand {
                 final String namePart = args[0].substring(0, sepIndex);
                 final User otherUser;
                 try {
-                    otherUser = getPlayer(server, new String[]{namePart}, 0, true, true);
+                    otherUser = getPlayer(server, new String[] { namePart }, 0, true, true);
                 } catch (final Exception ex) {
                     return homes;
                 }
