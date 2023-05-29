@@ -22,8 +22,7 @@ public class Commandrenamehome extends EssentialsCommand {
     }
 
     @Override
-    public void run(final Server server, final User user, final String commandLabel, final String[] args)
-            throws Exception {
+    public void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {
         User usersHome = user;
         final String oldName;
         final String newName;

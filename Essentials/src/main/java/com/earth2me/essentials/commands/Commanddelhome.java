@@ -21,8 +21,7 @@ public class Commanddelhome extends EssentialsCommand {
     }
 
     @Override
-    public void run(final Server server, final CommandSource sender, final String commandLabel, final String[] args)
-            throws Exception {
+    public void run(final Server server, final CommandSource sender, final String commandLabel, final String[] args) throws Exception {
         if (args.length < 1) {
             throw new NotEnoughArgumentsException();
         }
@@ -51,10 +50,7 @@ public class Commanddelhome extends EssentialsCommand {
         if (name.equals("bed")) {
             throw new Exception(tl("invalidHomeName"));
         }
-        if (ess.getSettings().isConfirmHomeDelete() && user.hasHome(name)
-                && (!name.equals(user.getLastDelhomeConfirmation())
-                        || name.equals(user.getLastDelhomeConfirmation()) && System.currentTimeMillis()
-                                - user.getLastDelhomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
+        if (ess.getSettings().isConfirmHomeDelete() && user.hasHome(name) && (!name.equals(user.getLastDelhomeConfirmation()) || name.equals(user.getLastDelhomeConfirmation()) && System.currentTimeMillis() - user.getLastDelhomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
             user.setLastDelhomeConfirmation(name);
             user.setLastDelhomeConfirmationTimestamp();
             user.sendMessage(tl("delhomeConfirmation", name));

@@ -32,7 +32,7 @@ public class Commandmail extends EssentialsCommand {
 
     @Override
     public void run(final Server server, final User user, final String commandLabel, final String[] args) throws Exception {
-        if (args.length >= 1 && "ler".equalsIgnoreCase(args[0])) {
+        if (args.length >= 1 && ("read".equalsIgnoreCase(args[0]) || "ler".equalsIgnoreCase(args[0]))) {
             final ArrayList<MailMessage> mail = user.getMailMessages();
             if (mail == null || mail.size() == 0) {
                 user.sendMessage(tl("noMail"));
@@ -64,7 +64,7 @@ public class Commandmail extends EssentialsCommand {
             user.setMailList(mail);
             return;
         }
-        if (args.length >= 3 && "enviar".equalsIgnoreCase(args[0])) {
+        if (args.length >= 3 && ("send".equalsIgnoreCase(args[0]) || "enviar".equalsIgnoreCase(args[0]))) {
             if (!user.isAuthorized("essentials.mail.send")) {
                 throw new Exception(tl("noPerm", "essentials.mail.send"));
             }
@@ -168,7 +168,7 @@ public class Commandmail extends EssentialsCommand {
             user.sendMessage(tl("mailSent"));
             return;
         }
-        if (args.length >= 1 && "limpar".equalsIgnoreCase(args[0])) {
+        if (args.length >= 1 && ("clear".equalsIgnoreCase(args[0]) || "limpar".equalsIgnoreCase(args[0]))) {
             final ArrayList<MailMessage> mails = user.getMailMessages();
             if (mails == null || mails.size() == 0) {
                 user.sendMessage(tl("noMail"));
@@ -199,11 +199,11 @@ public class Commandmail extends EssentialsCommand {
 
     @Override
     protected void run(final Server server, final CommandSource sender, final String commandLabel, final String[] args) throws Exception {
-        if (args.length >= 1 && "ler".equalsIgnoreCase(args[0])) {
+        if (args.length >= 1 && ("read".equalsIgnoreCase(args[0]) || "ler".equalsIgnoreCase(args[0]))) {
             throw new Exception(tl("onlyPlayers", commandLabel + " read"));
-        } else if (args.length >= 1 && "limpar".equalsIgnoreCase(args[0])) {
+        } else if (args.length >= 1 && ("clear".equalsIgnoreCase(args[0]) || "limpar".equalsIgnoreCase(args[0]))) {
             throw new Exception(tl("onlyPlayers", commandLabel + " clear"));
-        } else if (args.length >= 3 && "enviar".equalsIgnoreCase(args[0])) {
+        } else if (args.length >= 3 && ("send".equalsIgnoreCase(args[0]) || "enviar".equalsIgnoreCase(args[0]))) {
             final User u;
             try {
                 u = getPlayer(server, args[1], true, true);
