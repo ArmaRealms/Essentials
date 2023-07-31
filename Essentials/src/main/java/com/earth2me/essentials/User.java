@@ -464,7 +464,7 @@ public class User extends UserData implements Comparable<User>, IMessageRecipien
         final String nickname;
         String suffix = "";
         final String nick = getNickname();
-        if (ess.getSettings().isCommandDisabled("nick") || nick == null || nick.isEmpty() || nick.equals(getName()) || !isAuthorized("essentials.nick.keep")) {
+        if (ess.getSettings().isCommandDisabled("nick") || nick == null || nick.isEmpty() || nick.equals(getName())) {
             nickname = getName();
         } else if (nick.equalsIgnoreCase(getName())) {
             nickname = nick;
