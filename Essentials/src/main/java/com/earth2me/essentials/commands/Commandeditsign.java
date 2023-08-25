@@ -79,8 +79,11 @@ public class Commandeditsign extends EssentialsCommand {
                     user.sendMessage(tl("editsignCommandClearLine", line + 1));
                 }
             } else if (args[0].equalsIgnoreCase("copy")) {
-                final int line = args.length == 1 ? -1 : Integer.parseInt(args[1]) - 1;
+                if (callSignEvent(sign, user.getBase(), sign.getLines())) {
+                    return;
+                }
 
+                final int line = args.length == 1 ? -1 : Integer.parseInt(args[1]) - 1;
                 if (line == -1) {
                     for (int i = 0; i < 4; i++) {
                         // We use unformat here to prevent players from copying signs with colors that they do not have permission to use.
@@ -119,6 +122,9 @@ public class Commandeditsign extends EssentialsCommand {
     private boolean callSignEvent(final ModifiableSign sign, final Player player, final String[] lines) {
         final SignChangeEvent event;
         if (VersionUtil.getServerBukkitVersion().isHigherThanOrEqualTo(VersionUtil.v1_20_1_R01)) {
+            if (sign.isWaxed() && !player.hasPermission("essentials.editsign.waxed.exempt")) {
+                return true;
+            }
             event = new SignChangeEvent(sign.getBlock(), player, lines, sign.isFront() ? Side.FRONT : Side.BACK);
         } else {
             //noinspection deprecation
@@ -199,6 +205,11 @@ public class Commandeditsign extends EssentialsCommand {
                 boolean isFront() {
                     return side == Side.FRONT;
                 }
+
+                @Override
+                boolean isWaxed() {
+                    return sign.isWaxed();
+                }
             };
         }
         return new ModifiableSign(sign) {
@@ -221,6 +232,11 @@ public class Commandeditsign extends EssentialsCommand {
             boolean isFront() {
                 return true;
             }
+
+            @Override
+            boolean isWaxed() {
+                return false;
+            }
         };
     }
 
@@ -238,6 +254,8 @@ public class Commandeditsign extends EssentialsCommand {
         abstract void setLine(int line, String text);
 
         abstract boolean isFront();
+
+        abstract boolean isWaxed();
 
         Block getBlock() {
             return sign.getBlock();
