@@ -296,7 +296,11 @@ public final class MobCompat {
         }
 
         private Villager.Profession asEnum() {
-            return EnumUtil.valueOf(Villager.Profession.class, newProfession, oldProfession);
+            Villager.Profession profession = Villager.Profession.valueOf(newProfession);
+            if (profession == null) {
+                profession = Villager.Profession.valueOf(oldProfession);
+            }
+            return profession;
         }
     }
 
