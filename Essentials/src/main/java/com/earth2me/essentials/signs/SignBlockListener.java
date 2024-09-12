@@ -5,7 +5,6 @@ import com.earth2me.essentials.utils.FormatUtil;
 import com.earth2me.essentials.utils.MaterialUtil;
 import net.ess3.api.IEssentials;
 import net.ess3.api.MaxMoneyException;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
@@ -30,7 +29,7 @@ public class SignBlockListener implements Listener {
         this.ess = ess;
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    //    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSignBlockBreak(final BlockBreakEvent event) {
         if (ess.getSettings().areSignsDisabled()) {
             event.getHandlers().unregister(this);
@@ -76,46 +75,13 @@ public class SignBlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onSignSignChange2(final SignChangeEvent event) {
-        if (ess.getSettings().areSignsDisabled()) {
-            event.getHandlers().unregister(this);
-            return;
-        }
         final User user = ess.getUser(event.getPlayer());
-
         for (int i = 0; i < 4; i++) {
             event.setLine(i, FormatUtil.formatString(user, "essentials.signs", event.getLine(i)));
         }
-
-        final String lColorlessTopLine = ChatColor.stripColor(event.getLine(0)).toLowerCase().trim();
-        if (lColorlessTopLine.isEmpty()) {
-            return;
-        }
-        //We loop through all sign types here to prevent clashes with preexisting signs later
-        for (final Signs signs : Signs.values()) {
-            final EssentialsSign sign = signs.getSign();
-            // If the top sign line contains any of the success name (excluding colors), just remove all colours from the first line.
-            // This is to ensure we are only modifying possible Essentials Sign and not just removing colors from the first line of all signs.
-            // Top line and sign#getSuccessName() are both lowercased since contains is case-sensitive.
-            final String successName = sign.getSuccessName(ess);
-            if (successName == null) {
-                user.sendTl("errorWithMessage", "Please report this error to a staff member.");
-                return;
-            }
-            final String lSuccessName = ChatColor.stripColor(successName.toLowerCase());
-            if (lColorlessTopLine.contains(lSuccessName)) {
-
-                // If this sign is not enabled and it has been requested to not protect it's name (when disabled), then do not protect the name.
-                // By lower-casing it and stripping colours. 
-                if (!ess.getSettings().enabledSigns().contains(sign)
-                    && ess.getSettings().getUnprotectedSignNames().contains(sign)) {
-                    continue;
-                }
-                event.setLine(0, lColorlessTopLine);
-            }
-        }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    //    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSignSignChange(final SignChangeEvent event) {
         if (ess.getSettings().areSignsDisabled()) {
             event.getHandlers().unregister(this);
@@ -134,7 +100,7 @@ public class SignBlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    //    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onSignBlockPlace(final BlockPlaceEvent event) {
         if (ess.getSettings().areSignsDisabled()) {
             event.getHandlers().unregister(this);
@@ -158,7 +124,7 @@ public class SignBlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    //    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onSignBlockBurn(final BlockBurnEvent event) {
         if (ess.getSettings().areSignsDisabled()) {
             event.getHandlers().unregister(this);
@@ -178,7 +144,7 @@ public class SignBlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    //    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onSignBlockIgnite(final BlockIgniteEvent event) {
         if (ess.getSettings().areSignsDisabled()) {
             event.getHandlers().unregister(this);
@@ -198,7 +164,7 @@ public class SignBlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    //    @EventHandler(priority = EventPriority.LOW)
     public void onSignBlockPistonExtend(final BlockPistonExtendEvent event) {
         if (ess.getSettings().areSignsDisabled()) {
             event.getHandlers().unregister(this);
@@ -219,7 +185,7 @@ public class SignBlockListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    //    @EventHandler(priority = EventPriority.LOW)
     public void onSignBlockPistonRetract(final BlockPistonRetractEvent event) {
         if (ess.getSettings().areSignsDisabled()) {
             event.getHandlers().unregister(this);
@@ -228,7 +194,7 @@ public class SignBlockListener implements Listener {
 
         if (event.isSticky()) {
             final Block pistonBaseBlock = event.getBlock();
-            final Block[] affectedBlocks = new Block[] {pistonBaseBlock, pistonBaseBlock.getRelative(event.getDirection()), event.getRetractLocation().getBlock()};
+            final Block[] affectedBlocks = new Block[]{pistonBaseBlock, pistonBaseBlock.getRelative(event.getDirection()), event.getRetractLocation().getBlock()};
 
             for (final Block block : affectedBlocks) {
                 if ((MaterialUtil.isSign(block.getType()) && EssentialsSign.isValidSign(ess, new EssentialsSign.BlockSign(block))) || EssentialsSign.checkIfBlockBreaksSigns(block)) {
