@@ -22,6 +22,7 @@ commands:
   back:
     description: Teleports you to your location prior to tp/spawn/warp.
     usage: /<command> [player]
+    aliases: [voltar]
   backup:
     description: Runs the backup if configured.
     usage: /<command>
@@ -133,9 +134,11 @@ commands:
   feed:
     description: Satisfy the hunger.
     usage: /<command> [player]
+    aliases: [comer]
   fly:
     description: Take off, and soar!
     usage: /<command> [player] [on|off]
+    aliases: [voar]
   fireball:
     description: Throw a fireball or other assorted projectiles.
     usage: /<command> [fireball|small|large|arrow|skull|egg|snowball|expbottle|dragon|splashpotion|lingeringpotion|trident] [speed]
@@ -172,9 +175,9 @@ commands:
   heal:
     description: Heals you or the given player.
     usage: /<command> [player]
-  help:
-    description: Views a list of available commands.
-    usage: /<command> [search term] [page]
+#  help:
+#    description: Views a list of available commands.
+#    usage: /<command> [search term] [page]
   helpop:
     description: Message online admins.
     usage: /<command> <message>
@@ -188,7 +191,7 @@ commands:
   ignore:
     description: Ignore or unignore other players.
     usage: /<command> <player>
-    aliases: [tpignore, payignore]
+    aliases: [tpignore, payignore, mailignore]
   info:
     description: Shows information set by the server owner.
     usage: /<command> [chapter] [page]
@@ -349,13 +352,13 @@ commands:
   rest:
     description: Rests you or the given player.
     usage: /<command> [player]
+    aliases: [descansar]
   rules:
     description: Views the server rules.
     usage: /<command> [chapter] [page]
   seen:
     description: Shows the last logout time of a player.
     usage: /<command> <playername>
-    aliases: [alts]
   sell:
     description: Sells the item currently in your hand.
     usage: /<command> <<itemname>|<id>|hand|inventory|blocks> [amount]
@@ -382,7 +385,7 @@ commands:
   editsign:
     description: Edits a sign in the world.
     usage: /<command> <set/clear/copy/paste> [line number] [text]
-    aliases: [sign, esign]
+    aliases: [sign, esign, placa]
   skull:
     description: Set the owner of a player skull
     usage: /<command> [owner]
