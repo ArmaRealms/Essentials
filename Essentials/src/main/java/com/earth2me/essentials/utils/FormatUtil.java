@@ -3,6 +3,7 @@ package com.earth2me.essentials.utils;
 import net.ess3.api.IUser;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.EnumSet;
 import java.util.Locale;
@@ -90,27 +91,10 @@ public final class FormatUtil {
     }
 
     static String replaceColor(final String input, final Set<ChatColor> supported, final boolean rgb) {
-        final StringBuffer legacyBuilder = new StringBuffer();
-        final Matcher legacyMatcher = REPLACE_ALL_PATTERN.matcher(input);
-        legacyLoop:
-        while (legacyMatcher.find()) {
-            final boolean isEscaped = legacyMatcher.group(1) != null;
-            if (!isEscaped) {
-                final char code = legacyMatcher.group(2).toLowerCase(Locale.ROOT).charAt(0);
-                for (final ChatColor color : supported) {
-                    if (color.getChar() == code) {
-                        legacyMatcher.appendReplacement(legacyBuilder, ChatColor.COLOR_CHAR + "$2");
-                        continue legacyLoop;
-                    }
-                }
-            }
-            // Don't change & to section sign (or replace two &'s with one)
-            legacyMatcher.appendReplacement(legacyBuilder, "&$2");
-        }
-        legacyMatcher.appendTail(legacyBuilder);
+        final StringBuilder legacyBuilder = stringBuilder(input, supported);
 
         if (rgb) {
-            final StringBuffer rgbBuilder = new StringBuffer();
+            final StringBuilder rgbBuilder = new StringBuilder();
             final Matcher rgbMatcher = REPLACE_ALL_RGB_PATTERN.matcher(legacyBuilder.toString());
             while (rgbMatcher.find()) {
                 final boolean isEscaped = rgbMatcher.group(1) != null;
@@ -130,6 +114,28 @@ public final class FormatUtil {
         return legacyBuilder.toString();
     }
 
+    private static @NotNull StringBuilder stringBuilder(final String input, final Set<ChatColor> supported) {
+        final StringBuilder legacyBuilder = new StringBuilder();
+        final Matcher legacyMatcher = REPLACE_ALL_PATTERN.matcher(input);
+        legacyLoop:
+        while (legacyMatcher.find()) {
+            final boolean isEscaped = legacyMatcher.group(1) != null;
+            if (!isEscaped) {
+                final char code = legacyMatcher.group(2).toLowerCase(Locale.ROOT).charAt(0);
+                for (final ChatColor color : supported) {
+                    if (color.getChar() == code) {
+                        legacyMatcher.appendReplacement(legacyBuilder, ChatColor.COLOR_CHAR + "$2");
+                        continue legacyLoop;
+                    }
+                }
+            }
+            // Don't change & to section sign (or replace two &'s with one)
+            legacyMatcher.appendReplacement(legacyBuilder, "&$2");
+        }
+        legacyMatcher.appendTail(legacyBuilder);
+        return legacyBuilder;
+    }
+
     /**
      * @throws NumberFormatException If the provided hex color code is invalid or if version is lower than 1.16.
      */
@@ -145,7 +151,6 @@ public final class FormatUtil {
             throw new NumberFormatException("Invalid hex length");
         }
 
-        //noinspection ResultOfMethodCallIgnored
         Color.fromRGB(Integer.decode("#" + hexColor));
         final StringBuilder assembledColorCode = new StringBuilder();
         assembledColorCode.append(ChatColor.COLOR_CHAR + "x");
@@ -156,7 +161,7 @@ public final class FormatUtil {
     }
 
     static String stripColor(final String input, final Set<ChatColor> strip) {
-        final StringBuffer builder = new StringBuffer();
+        final StringBuilder builder = new StringBuilder();
         final Matcher matcher = STRIP_ALL_PATTERN.matcher(input);
         searchLoop:
         while (matcher.find()) {
@@ -193,21 +198,11 @@ public final class FormatUtil {
             return null;
         }
 
-        final StringBuffer rgbBuilder = new StringBuffer();
-        final Matcher rgbMatcher = STRIP_RGB_PATTERN.matcher(message);
-        while (rgbMatcher.find()) {
-            final String code = rgbMatcher.group(1).replace(String.valueOf(ChatColor.COLOR_CHAR), "");
-            if (rgb) {
-                rgbMatcher.appendReplacement(rgbBuilder, "&#" + code);
-                continue;
-            }
-            rgbMatcher.appendReplacement(rgbBuilder, "");
-        }
-        rgbMatcher.appendTail(rgbBuilder);
+        final StringBuilder rgbBuilder = stringBuilder(message, rgb);
         message = rgbBuilder.toString(); // arreter de parler
 
         // Legacy Colors
-        final StringBuffer builder = new StringBuffer();
+        final StringBuilder builder = new StringBuilder();
         final Matcher matcher = STRIP_ALL_PATTERN.matcher(message);
         searchLoop:
         while (matcher.find()) {
@@ -222,6 +217,21 @@ public final class FormatUtil {
         }
         matcher.appendTail(builder);
         return builder.toString();
+    }
+
+    private static @NotNull StringBuilder stringBuilder(final String message, final boolean rgb) {
+        final StringBuilder rgbBuilder = new StringBuilder();
+        final Matcher rgbMatcher = STRIP_RGB_PATTERN.matcher(message);
+        while (rgbMatcher.find()) {
+            final String code = rgbMatcher.group(1).replace(String.valueOf(ChatColor.COLOR_CHAR), "");
+            if (rgb) {
+                rgbMatcher.appendReplacement(rgbBuilder, "&#" + code);
+                continue;
+            }
+            rgbMatcher.appendReplacement(rgbBuilder, "");
+        }
+        rgbMatcher.appendTail(rgbBuilder);
+        return rgbBuilder;
     }
 
     //This is the general permission sensitive message format function, does not touch urls.
@@ -283,14 +293,6 @@ public final class FormatUtil {
 
     static String stripColor(final String input, final Pattern pattern) {
         return pattern.matcher(input).replaceAll("");
-    }
-
-    public static String lastCode(final String input) {
-        final int pos = input.lastIndexOf(ChatColor.COLOR_CHAR);
-        if (pos == -1 || (pos + 1) == input.length()) {
-            return "";
-        }
-        return input.substring(pos, pos + 2);
     }
 
     static String blockURL(final String input) {
