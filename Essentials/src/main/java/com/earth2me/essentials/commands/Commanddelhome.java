@@ -19,6 +19,35 @@ public class Commanddelhome extends EssentialsCommand {
         super("delhome");
     }
 
+    private void deleteHome(CommandSource sender, User user, String home, boolean skipConfirmation) {
+        if (!skipConfirmation && ess.getSettings().isConfirmHomeDelete() && user.hasHome(home)
+                && (!home.equalsIgnoreCase(user.getLastDelhomeConfirmation())
+                || (home.equalsIgnoreCase(user.getLastDelhomeConfirmation())
+                && System.currentTimeMillis() - user.getLastDelhomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2)))) {
+            user.setLastDelhomeConfirmation(home);
+            user.setLastDelhomeConfirmationTimestamp();
+            user.sendTl("delhomeConfirmation", home);
+            return;
+        }
+
+        final HomeModifyEvent event = new HomeModifyEvent(sender.getUser(), user, home, user.getHome(home), false);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            if (ess.getSettings().isDebug()) {
+                ess.getLogger().info("HomeModifyEvent canceled for /delhome execution by " + sender.getDisplayName());
+            }
+            return;
+        }
+
+        try {
+            user.delHome(home);
+        } catch (Exception e) {
+            sender.sendTl("invalidHome", home);
+        }
+        user.setLastDelhomeConfirmation(null);
+        sender.sendTl("deleteHome", home);
+    }
+
     @Override
     public void run(final Server server, final CommandSource sender, final String commandLabel, final String[] args) throws Exception {
         if (args.length < 1) {
@@ -46,28 +75,19 @@ public class Commanddelhome extends EssentialsCommand {
             name = expandedArg[0].toLowerCase(Locale.ENGLISH);
         }
 
-        if (name.equals("bed")) {
-            throw new TranslatableException("invalidHomeName");
+        switch (name) {
+            case "bed":
+                throw new TranslatableException("invalidHomeName");
+            case "*":
+                final List<String> homes = user.getHomes();
+                for (String home : homes) {
+                    deleteHome(sender, user, home, true);
+                }
+                break;
+            default:
+                deleteHome(sender, user, name, false);
+                break;
         }
-        if (ess.getSettings().isConfirmHomeDelete() && user.hasHome(name) && (!name.equals(user.getLastDelhomeConfirmation()) || name.equals(user.getLastDelhomeConfirmation()) && System.currentTimeMillis() - user.getLastDelhomeConfirmationTimestamp() > TimeUnit.MINUTES.toMillis(2))) {
-            user.setLastDelhomeConfirmation(name);
-            user.setLastDelhomeConfirmationTimestamp();
-            user.sendTl("delhomeConfirmation", name);
-            return;
-        }
-
-        final HomeModifyEvent event = new HomeModifyEvent(sender.getUser(), user, name, user.getHome(name), false);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            if (ess.getSettings().isDebug()) {
-                ess.getLogger().info("HomeModifyEvent canceled for /delhome execution by " + sender.getDisplayName());
-            }
-            return;
-        }
-
-        user.delHome(name);
-        sender.sendTl("deleteHome", name);
-        user.setLastDelhomeConfirmation(null);
     }
 
     @Override
@@ -84,11 +104,12 @@ public class Commanddelhome extends EssentialsCommand {
                     final String namePart = args[0].substring(0, sepIndex);
                     final User otherUser;
                     try {
-                        otherUser = getPlayer(server, new String[] {namePart}, 0, true, true);
+                        otherUser = getPlayer(server, new String[]{namePart}, 0, true, true);
                     } catch (final Exception ex) {
                         return homes;
                     }
                     otherUser.getHomes().forEach(home -> homes.add(namePart + ":" + home));
+                    homes.add(namePart + ":" + "*");
                 }
             }
             return homes;
